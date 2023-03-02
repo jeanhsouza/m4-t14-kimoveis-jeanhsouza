@@ -1,4 +1,4 @@
-import { Column,CreateDateColumn,Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import { Column,CreateDateColumn,Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
 import { Address } from "./adresses.entity";
 import { Category } from "./categories.entity";
 import { SchedulesUserProperties } from "./schedulesUsersProperties.entity";
@@ -12,7 +12,7 @@ export class RealEstate {
     @Column ({type:"boolean", default: true})
     sold: boolean = false
 
-    @Column ({type: "decimal", precision: 12, scale: 2})
+    @Column ({type: "decimal", precision: 12, scale: 2, default: 0})
     value: number | string
 
     @Column ({type:"integer"})
@@ -25,6 +25,7 @@ export class RealEstate {
     updatedAt: string
 
     @OneToOne(() => Address)
+    @JoinColumn()
     address: Address
 
     @ManyToOne (() => Category)

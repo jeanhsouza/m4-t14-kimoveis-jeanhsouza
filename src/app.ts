@@ -3,7 +3,6 @@ import express, { Application } from "express";
 import { handleErrors } from "./errors";
 import { categoryRoutes, loginRoute, realEstateRoutes, scheduleRoutes, usersRoutes } from "./routers";
 
-
 const app: Application = express();
 app.use(express.json());
 
