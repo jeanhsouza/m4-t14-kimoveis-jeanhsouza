@@ -16,18 +16,19 @@ export const createLoginService = async (loginData: iLogin): Promise<string> => 
     })
 
     if(!user){
-        throw new AppError('Wrong email or password', 401)
+        throw new AppError('Invalid credentials', 401)
     }
-
+   
     const passwordMatch = await compare(loginData.password, user.password)
-
+    
     if(!passwordMatch){
-        throw new AppError('Wrong email or password', 401)
+        throw new AppError('Invalid credentials', 401)
     }
 
     const token: string = jwt.sign(
-        {
-            email: user.email
+        {            
+            admin:user.admin,
+            email: user.email,
         },
         process.env.SECRET_KEY!,
         {

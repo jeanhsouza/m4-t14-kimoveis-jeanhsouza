@@ -75,9 +75,12 @@ export const validateEmailExistsMiddleware = async (
 export const validateBodyMiddleware =
 	(schema: ZodTypeAny) =>
 	(request: Request, response: Response, next: NextFunction): void => {
+		console.log(request.body)
 		const validated = schema.parse(request.body);
-
-		request.body = validated;
+		console.log(validated)
+		
+		request.body = validated;	
+		
 
 		return next();
 };
@@ -87,8 +90,7 @@ export const ensureTokenMiddleware = (
 	response: Response,
 	next: NextFunction
 ): void => {
-	const authToken: any = request.headers.authorization;
-	
+	const authToken: any = request.headers.authorization;	
 
 	if (!authToken) {
 		throw new AppError("Missing bearer token", 401);
@@ -97,6 +99,11 @@ export const ensureTokenMiddleware = (
 	const token: string = authToken.split(" ")[1];
 
 	return verify(token, process.env.SECRET_KEY!, async (error, decoded : any) => {
+
+		if (error) {
+			throw new AppError(error.message, 401);
+		}
+
 		const userID: number = parseInt(request.params.id);
 		const userRepository: Repository<User> = AppDataSource.getRepository(User);
 
@@ -106,7 +113,7 @@ export const ensureTokenMiddleware = (
 			},
 		});
 
-		if (findUser?.id!==userID && !findUser?.admin) {
+		if (findUser?.id!==userID && !decoded.admin) {
 			throw new AppError("Insufficient permission", 403);
 		}		
 		return next();
@@ -126,7 +133,11 @@ export const ensureTokenUserAdminMiddleware = (
 
 	const token: string = authToken.split(" ")[1];
 
-	return verify(token, process.env.SECRET_KEY!, async (error, decoded : any) => {
+    return verify(token, process.env.SECRET_KEY!, async (error, decoded : any) => {
+
+		if(error){
+			throw new AppError(error.message, 401)
+		}
 
 		const userRepository: Repository<User> = AppDataSource.getRepository(User);
 
@@ -136,12 +147,13 @@ export const ensureTokenUserAdminMiddleware = (
 			},
 		});
 
-		if (!findUser?.admin) {
+		if (!decoded.admin) {
 			throw new AppError("Insufficient permission", 403);
 		}		
+
 		return next();
 	} )
-
+	
 };
 
 

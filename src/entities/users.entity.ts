@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Timestamp, UpdateDateColumn } from "typeorm";
+import { hash, hashSync } from "bcryptjs";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Timestamp, UpdateDateColumn } from "typeorm";
 import { SchedulesUserProperties } from "./schedulesUsersProperties.entity";
 
 @Entity("users")
@@ -28,5 +29,12 @@ export class User {
     deletedAt: string 
 
     @OneToMany(() => SchedulesUserProperties, schedulesUserPropeties => schedulesUserPropeties.user)    
-    schedule: SchedulesUserProperties[]
+    schedules: SchedulesUserProperties[]
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    passwordHash() {
+        this.password = hashSync(this.password,10)
+    }
+
 }   

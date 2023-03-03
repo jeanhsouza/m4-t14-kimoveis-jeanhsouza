@@ -1,37 +1,52 @@
-import { Column,CreateDateColumn,Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import {
+	Column,
+	CreateDateColumn,
+	Entity,
+	JoinColumn,
+	ManyToOne,
+	OneToMany,
+	OneToOne,
+	PrimaryGeneratedColumn,
+	UpdateDateColumn,
+} from "typeorm";
+import { nullable } from "zod";
 import { Address } from "./adresses.entity";
 import { Category } from "./categories.entity";
 import { SchedulesUserProperties } from "./schedulesUsersProperties.entity";
 
-
 @Entity("realEstate")
 export class RealEstate {
-    @PrimaryGeneratedColumn("increment")
-    id: number;
+	@PrimaryGeneratedColumn("increment")
+	id: number;
 
-    @Column ({type:"boolean", default: true})
-    sold: boolean = false
+	@Column({ type: "boolean", default: true })
+	sold: boolean = false;
 
-    @Column ({type: "decimal", precision: 12, scale: 2, default: 0})
-    value: number | string
+	@Column({ type: "decimal", precision: 12, scale: 2, default: 0 })
+	value: number | string;
 
-    @Column ({type:"integer"})
-    size: number
+	@Column({ type: "integer" })
+	size: number;
 
-    @CreateDateColumn({type: "date"})
-    createdAt: string
-    
-    @UpdateDateColumn ({type: "date"})
-    updatedAt: string
+	@CreateDateColumn({ type: "date" })
+	createdAt: string;
 
-    @OneToOne(() => Address)
-    @JoinColumn()
-    address: Address
+	@UpdateDateColumn({ type: "date" })
+	updatedAt: string;
 
-    @ManyToOne (() => Category)
-    category : Category  
-    
-    @OneToMany(() => SchedulesUserProperties, schedulesUserPropeties => schedulesUserPropeties.realEstate)
-    schedule: SchedulesUserProperties[]
+	@OneToOne(() => Address)
+	@JoinColumn()
+	address: Address;
 
-}   
+	@ManyToOne(
+		() => Category,
+		{ nullable: true }
+	)
+	category: Category 	;
+
+	@OneToMany(
+		() => SchedulesUserProperties,
+		(schedulesUserPropeties) => schedulesUserPropeties.realEstate
+	)
+	schedules: SchedulesUserProperties[];
+}
