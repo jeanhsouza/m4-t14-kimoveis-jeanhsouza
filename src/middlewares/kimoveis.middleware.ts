@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 import { User } from "../entities";
 import { AppDataSource } from "../data-source";
 import { UserRequiredKeys } from "../interfaces/users.interface";
-import jwt, { verify } from 'jsonwebtoken'
+import { verify } from "jsonwebtoken";
 
 export const validateUserExistMiddleware = async (
 	request: Request,
@@ -40,7 +40,7 @@ export const validateEmailExistsMiddleware = async (
 ): Promise<Response | void> => {
 	const { email } = request.body;
 
-    const payloadKeys: string[] = Object.keys(request.body);
+	const payloadKeys: string[] = Object.keys(request.body);
 	const requiredKeys: UserRequiredKeys[] = ["name", "email", "password"];
 
 	const filteredKeys: string[] = requiredKeys.filter(
@@ -52,18 +52,21 @@ export const validateEmailExistsMiddleware = async (
 	);
 
 	if (!hasRequiredKeys) {
-		throw new AppError("At least one of those keys must be send: (name, email or password)",400);
-	}	
+		throw new AppError(
+			"At least one of those keys must be send: (name, email or password)",
+			400
+		);
+	}
 
 	const userRepository: Repository<User> = AppDataSource.getRepository(User);
 
-	if(email){
+	if (email) {
 		const findEmailUser = await userRepository.findOne({
 			where: {
 				email: email,
 			},
 		});
-	
+
 		if (findEmailUser) {
 			throw new AppError("Email already exists", 409);
 		}
@@ -75,22 +78,19 @@ export const validateEmailExistsMiddleware = async (
 export const validateBodyMiddleware =
 	(schema: ZodTypeAny) =>
 	(request: Request, response: Response, next: NextFunction): void => {
-		console.log(request.body)
 		const validated = schema.parse(request.body);
-		console.log(validated)
-		
-		request.body = validated;	
-		
+
+		request.body = validated;
 
 		return next();
-};
+	};
 
 export const ensureTokenMiddleware = (
 	request: Request,
 	response: Response,
 	next: NextFunction
 ): void => {
-	const authToken: any = request.headers.authorization;	
+	const authToken: any = request.headers.authorization;
 
 	if (!authToken) {
 		throw new AppError("Missing bearer token", 401);
@@ -98,8 +98,7 @@ export const ensureTokenMiddleware = (
 
 	const token: string = authToken.split(" ")[1];
 
-	return verify(token, process.env.SECRET_KEY!, async (error, decoded : any) => {
-
+	return verify(token, process.env.SECRET_KEY!, async (error, decoded: any) => {
 		if (error) {
 			throw new AppError(error.message, 401);
 		}
@@ -113,11 +112,33 @@ export const ensureTokenMiddleware = (
 			},
 		});
 
-		if (findUser?.id!==userID && !decoded.admin) {
+		if (findUser?.id !== userID && !decoded.admin) {
 			throw new AppError("Insufficient permission", 403);
-		}		
+		}
 		return next();
-	} )
+	});
+};
+
+export const ensureValidTokenMiddleware = (
+	request: Request,
+	response: Response,
+	next: NextFunction
+): void => {
+	const authToken: any = request.headers.authorization;
+
+	if (!authToken) {
+		throw new AppError("Missing bearer token", 401);
+	}
+
+	const token: string = authToken.split(" ")[1];
+
+	return verify(token, process.env.SECRET_KEY!, async (error, decoded: any) => {
+		if (error) {
+			throw new AppError(error.message, 401);
+		}
+
+		return next();
+	});
 };
 
 export const ensureTokenUserAdminMiddleware = (
@@ -133,10 +154,9 @@ export const ensureTokenUserAdminMiddleware = (
 
 	const token: string = authToken.split(" ")[1];
 
-    return verify(token, process.env.SECRET_KEY!, async (error, decoded : any) => {
-
-		if(error){
-			throw new AppError(error.message, 401)
+	return verify(token, process.env.SECRET_KEY!, async (error, decoded: any) => {
+		if (error) {
+			throw new AppError(error.message, 401);
 		}
 
 		const userRepository: Repository<User> = AppDataSource.getRepository(User);
@@ -149,12 +169,8 @@ export const ensureTokenUserAdminMiddleware = (
 
 		if (!decoded.admin) {
 			throw new AppError("Insufficient permission", 403);
-		}		
+		}
 
 		return next();
-	} )
-	
+	});
 };
-
-
-

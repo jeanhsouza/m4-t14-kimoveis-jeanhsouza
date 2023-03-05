@@ -7,13 +7,12 @@ import { allUserResultSchema } from "../../schemas/users.schema";
 
 export const listAllUsersService = async (
 	request: Request
-): Promise<iUserResult[]> => {  
-
+): Promise<iUserResult[]> => {
 	const movieRepository: Repository<User> = AppDataSource.getRepository(User);
-	
-	const findUsers : Array<User> = await movieRepository.find();
 
-	const allUsers = allUserResultSchema.parse(findUsers);	
+	const findUsers: Array<User> = await movieRepository.find();
+
+	const allUsers = allUserResultSchema.parse(findUsers);
 
 	return allUsers;
 };

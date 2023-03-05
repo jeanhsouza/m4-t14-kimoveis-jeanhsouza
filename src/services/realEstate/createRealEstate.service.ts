@@ -24,28 +24,27 @@ export const createRealEstateService = async (
 	let addressFull = null;
 	let categoryFull = null;
 
-	if(realEstateData.address.number){
-        const findAddress = await addressRepository.findOneBy({
-            street: realEstateData.address.street,
-            city: realEstateData.address.city,
-            number: realEstateData.address.number,
-            zipCode: realEstateData.address.zipCode,
-            state: realEstateData.address.state,
-        });
+	if (realEstateData.address.number) {
+		const findAddress = await addressRepository.findOneBy({
+			street: realEstateData.address.street,
+			city: realEstateData.address.city,
+			number: realEstateData.address.number,
+			zipCode: realEstateData.address.zipCode,
+			state: realEstateData.address.state,
+		});
 
-        if(findAddress){
-            throw new AppError("Address already exists",409)
-        }        
+		if (findAddress) {
+			throw new AppError("Address already exists", 409);
+		}
+	}
 
-    }
+	const address: Address = addressRepository.create(realEstateData.address);
 
-    const address: Address = addressRepository.create(realEstateData.address);
+	await addressRepository.save(address);
 
-    await addressRepository.save(address);
+	const newAddress = addressSchema.parse(address);
 
-    const newAddress = addressSchema.parse(address);
-
-    addressFull = newAddress;
+	addressFull = newAddress;
 
 	if (realEstateData.categoryId) {
 		const findCategory = await categoryRepository.findOne({
@@ -57,30 +56,26 @@ export const createRealEstateService = async (
 		if (findCategory) {
 			categoryFull = findCategory;
 		}
-
 	}
 
 	const onlyRealEstate = {
 		value: realEstateData.value,
 		size: realEstateData.size,
-		sold: realEstateData.sold,
 		address: addressFull,
-		category: {...categoryFull}
-	};	
+		category: { ...categoryFull },
+	};
 
 	const realEstate: RealEstate = realEstateRepository.create(onlyRealEstate);
-	
+
 	await realEstateRepository.save(realEstate);
-	
-	const newRealEstate = realEstateSchema.parse(realEstate);	
+
+	const newRealEstate = realEstateSchema.parse(realEstate);
 
 	const newRealEstateFull: iRealEstateResult = {
 		...newRealEstate,
 		address: addressFull,
 		category: categoryFull!,
 	};
-	
-	return newRealEstateFull;
-	
 
+	return newRealEstateFull;
 };

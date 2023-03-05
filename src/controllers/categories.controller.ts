@@ -28,7 +28,7 @@ export const listCategoryRealEstateController = async (
 	request: Request,
 	response: Response
 ) => {
-	const idCategory: number = parseInt(request.params.id)
+	const idCategory: number = parseInt(request.params.id);
 
 	const categoryRealEstate = await listCategoryRealEstateService(idCategory);
 

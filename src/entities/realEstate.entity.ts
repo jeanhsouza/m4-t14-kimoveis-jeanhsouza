@@ -9,7 +9,6 @@ import {
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from "typeorm";
-import { nullable } from "zod";
 import { Address } from "./adresses.entity";
 import { Category } from "./categories.entity";
 import { SchedulesUserProperties } from "./schedulesUsersProperties.entity";
@@ -38,11 +37,8 @@ export class RealEstate {
 	@JoinColumn()
 	address: Address;
 
-	@ManyToOne(
-		() => Category,
-		{ nullable: true }
-	)
-	category: Category 	;
+	@ManyToOne(() => Category, { nullable: true })
+	category: Category;
 
 	@OneToMany(
 		() => SchedulesUserProperties,

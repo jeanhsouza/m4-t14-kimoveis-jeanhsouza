@@ -5,9 +5,9 @@ import { scheduleRoutes } from "./schedules.router";
 import { usersRoutes } from "./users.router";
 
 export {
-    categoryRoutes,
-    loginRoute,
-    realEstateRoutes,
-    scheduleRoutes,
-    usersRoutes
-}
+	categoryRoutes,
+	loginRoute,
+	realEstateRoutes,
+	scheduleRoutes,
+	usersRoutes,
+};

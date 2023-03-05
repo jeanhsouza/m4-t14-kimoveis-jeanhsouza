@@ -6,7 +6,6 @@ import { listAllUsersService } from "../services/users/listAllUsers.service";
 import { listOnlyUserService } from "../services/users/listOnlyUser.service";
 import { updateUserService } from "../services/users/updateUser.service";
 
-
 export const createUserController = async (
 	request: Request,
 	response: Response

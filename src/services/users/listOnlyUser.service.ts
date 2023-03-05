@@ -1,21 +1,21 @@
-import { Repository } from "typeorm"
-import { AppDataSource } from "../../data-source"
-import { User } from "../../entities"
-import { iUserResult } from "../../interfaces/users.interface"
-import { userResultSchema } from "../../schemas/users.schema"
+import { Repository } from "typeorm";
+import { AppDataSource } from "../../data-source";
+import { User } from "../../entities";
+import { iUserResult } from "../../interfaces/users.interface";
+import { userResultSchema } from "../../schemas/users.schema";
 
-export const listOnlyUserService = async (idUser: number): Promise<iUserResult> => {
+export const listOnlyUserService = async (
+	idUser: number
+): Promise<iUserResult> => {
+	const userRepository: Repository<User> = AppDataSource.getRepository(User);
 
-    const userRepository: Repository<User> = AppDataSource.getRepository(User)
+	const findUser = await userRepository.findOne({
+		where: {
+			id: idUser,
+		},
+	});
 
-    const findUser = await userRepository.findOne({
-        where: {
-            id: idUser
-        }
-    })
+	const onlyUser = userResultSchema.parse(findUser);
 
-    const onlyUser = userResultSchema.parse(findUser)
-
-    return onlyUser
-
-}
+	return onlyUser;
+};
